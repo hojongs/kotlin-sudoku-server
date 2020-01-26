@@ -1,3 +1,3 @@
-rootProject.name = "kotlin-spring-boot-grpc-example"
+rootProject.name = "kotlin-sudoku-server"
 include("presentation")
 include("service")
