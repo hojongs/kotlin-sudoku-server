@@ -1,4 +1,5 @@
-# Kotlin Spring Boot GRPC Example
+# Kotlin Sudoku Server
+- Imported from [this repo](https://github.com/hojongs/kotlin-spring-boot-grpc-example)
 ## Usage
 ### Run Local Server
 ```shell script
