@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package com.hojongs.grpc;
+
+import "com/hojongs/entity/sudoku.proto";
+import "com/hojongs/entity/block_position.proto";
+import "google/protobuf/empty.proto";
+
+service SudokuService {
+    rpc GetSudoku (GetSudokuRequest) returns (com.hojongs.entity.Sudoku);
+    rpc InsertBlockDigit (InsertBlockDigitRequest) returns (google.protobuf.Empty);
+    rpc EmptyBlockDigit (EmptyBlockDigitRequest) returns (google.protobuf.Empty);
+    rpc CompleteSudoku (CompleteSudokuRequest) returns (google.protobuf.Empty);
+}
+
+message GetSudokuRequest {
+    int64 sudoku_id = 1;
+}
+
+message InsertBlockDigitRequest {
+    int64 sudoku_id = 1;
+    com.hojongs.entity.BlockPosition block_pos = 2;
+    int32 digit = 3;
+}
+
+message EmptyBlockDigitRequest {
+    int64 sudoku_id = 1;
+    com.hojongs.entity.BlockPosition block_pos = 2;
+}
+
+message CompleteSudokuRequest {
+    com.hojongs.entity.Sudoku sudoku = 1;
+}

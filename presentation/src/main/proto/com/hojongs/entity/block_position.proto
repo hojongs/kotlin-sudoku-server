@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_multiple_files = false;
+option java_outer_classname = "BlockPositionProto";
+
+package com.hojongs.entity;
+
+message BlockPosition {
+    int32 row_idx = 1;
+    int32 col_idx = 2;
+}

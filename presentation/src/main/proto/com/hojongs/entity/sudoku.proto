@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_multiple_files = false;
+option java_outer_classname = "SudokuProto";
+
+package com.hojongs.entity;
+
+import "google/protobuf/empty.proto";
+
+message Sudoku {
+    int64 sudoku_id = 1;
+    repeated SudokuRow sudoku_rows = 2;
+}
+
+message SudokuRow {
+    repeated SudokuBlock sudoku_blocks = 1;
+}
+
+message SudokuBlock {
+    oneof status {
+        google.protobuf.Empty empty = 1;
+        int32 digit = 2;
+    }
+}
