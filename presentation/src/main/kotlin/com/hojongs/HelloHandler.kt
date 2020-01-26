@@ -1,5 +1,6 @@
 package com.hojongs
 
+import com.hojongs.service.HelloService
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest

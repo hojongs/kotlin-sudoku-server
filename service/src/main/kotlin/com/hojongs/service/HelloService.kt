@@ -1,4 +1,4 @@
-package com.hojongs
+package com.hojongs.service
 
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono

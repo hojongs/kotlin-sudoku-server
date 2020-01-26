@@ -48,7 +48,7 @@ class HelloGrpcServiceTest {
                         }
                         .build()
                 )
-        )
+            )
             .assertNext { it.hello.msg shouldBe "hello" }
             .verifyComplete()
     }

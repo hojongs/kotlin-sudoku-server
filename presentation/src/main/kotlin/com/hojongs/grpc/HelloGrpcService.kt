@@ -1,6 +1,6 @@
 package com.hojongs.grpc
 
-import com.hojongs.HelloService
+import com.hojongs.service.HelloService
 import org.lognet.springboot.grpc.GRpcService
 import reactor.core.publisher.Mono
 
@@ -17,7 +17,7 @@ class HelloGrpcService(
     private fun buildHelloResponse(msg: String) = HelloResponse
             .newBuilder()
             .setHello(
-                proto.Hello.newBuilder()
+                HelloProto.Hello.newBuilder()
                     .setMsg(msg)
             )
             .build()
