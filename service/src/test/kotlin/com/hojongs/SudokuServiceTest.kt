@@ -50,7 +50,7 @@ class SudokuServiceTest {
 
     @Test
     fun `test emptyBlockDigit()`() {
-        every { sudokuRepository.updateBlockDigit(any(), any(), any())} returns Mono.empty()
+        every { sudokuRepository.updateBlockDigit(any(), any(), any()) } returns Mono.empty()
 
         StepVerifier
             .create(
@@ -66,7 +66,7 @@ class SudokuServiceTest {
     fun `test completeSudoku()`() {
         val sudoku = Sudoku()
 
-        every { sudokuRepository.complete(any())} returns sudoku.toMono()
+        every { sudokuRepository.complete(any()) } returns sudoku.toMono()
         StepVerifier
             .create(
                 sudokuService.completeSudoku(
