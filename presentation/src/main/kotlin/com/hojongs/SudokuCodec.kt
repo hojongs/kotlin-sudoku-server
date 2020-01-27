@@ -75,4 +75,12 @@ object SudokuCodec {
         row_idx = blockPosition.rowIdx,
         col_idx = blockPosition.colIdx
     )
+
+    fun encodeBlockPosition(
+        blockPosition: BlockPosition
+    ): BlockPositionProto.BlockPosition = BlockPositionProto.BlockPosition
+        .newBuilder()
+        .setRowIdx(blockPosition.row_idx)
+        .setColIdx(blockPosition.col_idx)
+        .build()
 }

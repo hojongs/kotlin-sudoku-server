@@ -2,10 +2,14 @@ package com.hojongs.grpc
 
 import com.google.protobuf.Empty
 import com.hojongs.SudokuCodec
+import com.hojongs.entity.BlockPositionProto
 import com.hojongs.service.SudokuService
 import com.hojongs.entity.SudokuProto
 import org.lognet.springboot.grpc.GRpcService
 import reactor.core.publisher.Mono
+import reactor.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 
 @GRpcService
 class SudokuGrpcService(
@@ -44,6 +48,29 @@ class SudokuGrpcService(
             )
         }
         .map { Empty.getDefaultInstance() }
+
+    override fun validateSudoku(
+        request: Mono<SudokuProto.Sudoku>
+    ): Mono<ValidateSudokuResponse> = request
+        .map(SudokuCodec::decode)
+        .flatMapMany(sudokuService::validateSudoku)
+        .map(SudokuCodec::encodeBlockPosition)
+        .collectList()
+        .map { blockPositions ->
+            ValidateSudokuResponse.newBuilder()
+                .setBlockPositionList(
+                    BlockPositionProto.BlockPositionList
+                        .newBuilder()
+                        .addAllBlockPositions(blockPositions)
+                )
+                .build()
+        }
+        .switchIfEmpty(
+            ValidateSudokuResponse.newBuilder()
+                .setSuccess(Empty.getDefaultInstance())
+                .build()
+                .toMono()
+        )
 
     override fun completeSudoku(
         request: Mono<SudokuProto.Sudoku>
