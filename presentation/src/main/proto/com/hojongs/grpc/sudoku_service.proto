@@ -12,7 +12,8 @@ service SudokuService {
     rpc GetSudoku (GetSudokuRequest) returns (com.hojongs.entity.Sudoku);
     rpc InsertBlockDigit (InsertBlockDigitRequest) returns (google.protobuf.Empty);
     rpc EmptyBlockDigit (EmptyBlockDigitRequest) returns (google.protobuf.Empty);
-    rpc CompleteSudoku (CompleteSudokuRequest) returns (google.protobuf.Empty);
+    rpc ValidateSudoku (com.hojongs.entity.Sudoku) returns (ValidateSudokuResponse);
+    rpc CompleteSudoku (com.hojongs.entity.Sudoku) returns (google.protobuf.Empty);
 }
 
 message GetSudokuRequest {
@@ -30,6 +31,9 @@ message EmptyBlockDigitRequest {
     com.hojongs.entity.BlockPosition block_pos = 2;
 }
 
-message CompleteSudokuRequest {
-    com.hojongs.entity.Sudoku sudoku = 1;
+message ValidateSudokuResponse {
+    oneof result {
+        google.protobuf.Empty success = 1;
+        com.hojongs.entity.BlockPositionList block_position_list = 2;
+    }
 }

@@ -9,3 +9,7 @@ message BlockPosition {
     int32 row_idx = 1;
     int32 col_idx = 2;
 }
+
+message BlockPositionList {
+    repeated BlockPosition block_positions = 1;
+}
