@@ -5,7 +5,7 @@ import com.hojongs.SudokuRow
 import reactor.core.publisher.Flux
 
 class Sudoku(
-    val sudokuId: Long,
+    val sudokuId: Long? = null,
     private val blocks: Array<SudokuRow> = Array(SUDOKU_SIZE) {
         IntArray(SUDOKU_SIZE) { 0 }
     }
