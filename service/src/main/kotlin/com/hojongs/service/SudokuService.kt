@@ -15,7 +15,7 @@ class SudokuService(
         sudokuId = sudokuId
     )
 
-    fun insertBlockDigit(
+    fun updateBlockDigit(
         sudokuId: Long,
         blockPosition: BlockPosition,
         digit: Int

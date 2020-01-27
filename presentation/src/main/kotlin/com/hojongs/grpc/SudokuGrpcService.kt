@@ -26,7 +26,7 @@ class SudokuGrpcService(
         request: Mono<InsertBlockDigitRequest>
     ): Mono<Empty> = request
         .flatMap { req ->
-            sudokuService.insertBlockDigit(
+            sudokuService.updateBlockDigit(
                 sudokuId = req.sudokuId,
                 blockPosition = SudokuCodec.decodeBlockPosition(req.blockPos),
                 digit = req.digit
