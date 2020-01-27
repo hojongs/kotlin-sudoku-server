@@ -9,6 +9,7 @@ import org.lognet.springboot.grpc.GRpcService
 import reactor.core.publisher.Mono
 import reactor.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toFlux
 import reactor.kotlin.core.publisher.toMono
 
 @GRpcService
@@ -53,7 +54,8 @@ class SudokuGrpcService(
         request: Mono<SudokuProto.Sudoku>
     ): Mono<ValidateSudokuResponse> = request
         .map(SudokuCodec::decode)
-        .flatMapMany(sudokuService::validateSudoku)
+        .flatMap(sudokuService::validateSudoku)
+        .flatMapMany { it.toFlux() }
         .map(SudokuCodec::encodeBlockPosition)
         .collectList()
         .map { blockPositions ->

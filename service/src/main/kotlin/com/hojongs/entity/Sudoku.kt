@@ -1,5 +1,6 @@
 package com.hojongs.entity
 
+import com.google.common.annotations.VisibleForTesting
 import com.hojongs.SUDOKU_SIZE
 import com.hojongs.SudokuRow
 import reactor.core.publisher.Flux
@@ -9,7 +10,9 @@ data class Sudoku(
     val sudokuId: Long? = null,
     private val blocks: Array<SudokuRow> = Array(SUDOKU_SIZE) {
         IntArray(SUDOKU_SIZE) { 0 }
-    }
+    },
+    private val indexRange: IntRange = 0 until SUDOKU_SIZE,
+    private val digitRange: IntRange = 1..SUDOKU_SIZE
 ) {
 
     fun getRow(
@@ -21,7 +24,7 @@ data class Sudoku(
 
     fun isEmptyBlock(
         blockPosition: BlockPosition
-    ): Boolean = blocks[blockPosition.row_idx][blockPosition.col_idx] == 0
+    ): Boolean = blocks[blockPosition.rowIdx][blockPosition.colIdx] == 0
 
     fun updateBlockDigit(
         blockPosition: BlockPosition,
@@ -31,7 +34,7 @@ data class Sudoku(
             digit.takeIf { digit in 0..9 }
                 ?.run {
                     blocksToUpdate.apply {
-                        this[blockPosition.row_idx][blockPosition.col_idx] = digit
+                        this[blockPosition.rowIdx][blockPosition.colIdx] = digit
                     }
                 }
                 ?: throw IllegalArgumentException()
@@ -50,70 +53,89 @@ data class Sudoku(
         digit = 0
     )
 
-    fun validate(): List<BlockPosition> = listOf(
-        *validateRows().toTypedArray(),
-        *validateCols().toTypedArray(),
-        *validate3x3().toTypedArray()
-    )
+    fun validate(): Set<BlockPosition>? {
+        val errorPosSet = HashSet<BlockPosition>()
 
-    private fun validateRows(): List<BlockPosition> {
-        val blockPositions = ArrayList<BlockPosition>()
+        validateRows(errorPosSet = errorPosSet)
+        validateCols(errorPosSet = errorPosSet)
+        validate3x3(errorPosSet = errorPosSet)
 
-        for (row_idx in 0 until SUDOKU_SIZE) {
-            val digitSet = (0 until SUDOKU_SIZE).toMutableSet()
-
-            for (col_idx in 0 until SUDOKU_SIZE) {
-                val digit = blocks[row_idx][col_idx]
-
-                digitSet.takeIf { it.contains(digit) }
-                    ?.let { digitSet.remove(digit) }
-                    ?: blockPositions.add(BlockPosition(row_idx, col_idx))
-            }
-        }
-
-        return blockPositions
+        return errorPosSet.takeIf { it.count() != 0 }
     }
 
-    private fun validateCols(): List<BlockPosition> {
-        val blockPositions = ArrayList<BlockPosition>()
+    @VisibleForTesting
+    /* private */ fun validateRows(
+        errorPosSet: MutableSet<BlockPosition>
+    ) {
+        indexRange.forEach { rowIdx ->
+            val digitSet = digitRange.toMutableSet()
 
-        for (col_idx in 0 until SUDOKU_SIZE) {
-            val digitSet = (0 until SUDOKU_SIZE).toMutableSet()
-
-            for (row_idx in 0 until SUDOKU_SIZE) {
-                val digit = blocks[row_idx][col_idx]
-
-                digitSet.takeIf { it.contains(digit) }
-                    ?.let { digitSet.remove(digit) }
-                    ?: blockPositions.add(BlockPosition(row_idx, col_idx))
+            indexRange.forEach { colIdx ->
+                validateBlock(
+                    blockPosition = BlockPosition(rowIdx, colIdx),
+                    digitSet = digitSet,
+                    errorPosSet = errorPosSet
+                )
             }
         }
-
-        return blockPositions
     }
 
-    private fun validate3x3(): List<BlockPosition> {
+    @VisibleForTesting
+    /* private */ fun validateCols(
+        errorPosSet: MutableSet<BlockPosition>
+    ) {
+        indexRange.forEach { colIdx ->
+            val digitSet = digitRange.toMutableSet()
+
+            indexRange.forEach { rowIdx ->
+                validateBlock(
+                    blockPosition = BlockPosition(rowIdx, colIdx),
+                    digitSet = digitSet,
+                    errorPosSet = errorPosSet
+                )
+            }
+        }
+    }
+
+    @VisibleForTesting
+    /* private */ fun validate3x3(
+        errorPosSet: MutableSet<BlockPosition>
+    ) {
         assert(SUDOKU_SIZE == 9)
 
-        val blockPositions = ArrayList<BlockPosition>()
+        listOf(0, 3, 6).forEach { rowIdx ->
+            listOf(0, 3, 6).forEach { colIdx ->
+                val digitSet = digitRange.toMutableSet()
 
-        for (row_idx in listOf(0, 3, 6)) {
-            for (col_idx in listOf(0, 3, 6)) {
-                val digitSet = (0 until SUDOKU_SIZE).toMutableSet()
-
-                for (i in 0 until 3) {
-                    for (k in 0 until 3) {
-                        val digit = blocks[row_idx + i][col_idx + k]
-
-                        digitSet.takeIf { it.contains(digit) }
-                            ?.let { digitSet.remove(digit) }
-                            ?: blockPositions.add(BlockPosition(row_idx, col_idx))
+                (0..2).forEach { i ->
+                    (0..2).forEach { k ->
+                        validateBlock(
+                            blockPosition = BlockPosition(rowIdx + i, colIdx + k),
+                            digitSet = digitSet,
+                            errorPosSet = errorPosSet
+                        )
                     }
                 }
             }
         }
+    }
 
-        return blockPositions
+    @VisibleForTesting
+    /* private */ fun validateBlock(
+        blockPosition: BlockPosition,
+        digitSet: MutableSet<Int>,
+        errorPosSet: MutableSet<BlockPosition>
+    ) {
+        val rowIdx = blockPosition.rowIdx
+        val colIdx = blockPosition.colIdx
+        val digit = blocks[rowIdx][colIdx]
+
+        if (digit == 0)
+            return
+
+        digitSet.takeIf { it.contains(digit) }
+            ?.let { digitSet.remove(digit) }
+            ?: errorPosSet.add(BlockPosition(rowIdx, colIdx))
     }
 
     override fun equals(other: Any?): Boolean {

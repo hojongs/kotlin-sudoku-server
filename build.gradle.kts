@@ -51,6 +51,7 @@ subprojects {
         implementation(kotlin("stdlib-jdk8"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+        implementation("com.google.guava:guava:28.1-jre")
         testImplementation("io.projectreactor:reactor-test")
         testImplementation("org.junit.jupiter:junit-jupiter")
         testImplementation("io.kotlintest:kotlintest-assertions:3.3.2")

@@ -6,6 +6,7 @@ import com.hojongs.repository.SudokuRepository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
+import reactor.kotlin.core.publisher.toMono
 
 class SudokuService(
     private val sudokuRepository: SudokuRepository
@@ -38,7 +39,11 @@ class SudokuService(
 
     fun validateSudoku(
         sudoku: Sudoku
-    ): Flux<BlockPosition> = sudoku.validate().toFlux()
+    ): Mono<Set<BlockPosition>> = Mono.create { sink ->
+        sudoku.validate()
+            ?.let { sink.success(it) }
+            ?: sink.success()
+    }
 
     fun completeSudoku(
         sudoku: Sudoku
