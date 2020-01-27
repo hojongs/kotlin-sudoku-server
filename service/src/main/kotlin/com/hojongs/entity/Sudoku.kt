@@ -4,7 +4,8 @@ import com.hojongs.SUDOKU_SIZE
 import com.hojongs.SudokuRow
 import reactor.core.publisher.Flux
 
-class Sudoku(
+// TODO : initial block digit should be immutable
+data class Sudoku(
     val sudokuId: Long? = null,
     private val blocks: Array<SudokuRow> = Array(SUDOKU_SIZE) {
         IntArray(SUDOKU_SIZE) { 0 }
@@ -19,9 +20,35 @@ class Sudoku(
         .fromArray(blocks.clone())
 
     fun isEmptyBlock(
-        row_idx: Int,
-        col_idx: Int
-    ): Boolean = blocks[row_idx][col_idx] == 0
+        blockPosition: BlockPosition
+    ): Boolean = blocks[blockPosition.row_idx][blockPosition.col_idx] == 0
+
+    fun updateBlockDigit(
+        blockPosition: BlockPosition,
+        digit: Int
+    ): Sudoku = blocks.clone()
+        .let { blocksToUpdate ->
+            digit.takeIf { digit in 0..9 }
+                ?.run {
+                    blocksToUpdate.apply {
+                        this[blockPosition.row_idx][blockPosition.col_idx] = digit
+                    }
+                }
+                ?: throw IllegalArgumentException()
+        }
+        .let { blocksToUpdate ->
+            copy(
+                sudokuId = sudokuId,
+                blocks = blocksToUpdate
+            )
+        }
+
+    fun emptyBlockDigit(
+        blockPosition: BlockPosition
+    ): Sudoku = updateBlockDigit(
+        blockPosition = blockPosition,
+        digit = 0
+    )
 
     fun validate(): List<BlockPosition> = listOf(
         *validateRows().toTypedArray(),
