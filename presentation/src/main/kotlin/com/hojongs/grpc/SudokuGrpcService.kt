@@ -46,11 +46,11 @@ class SudokuGrpcService(
         .map { Empty.getDefaultInstance() }
 
     override fun completeSudoku(
-        request: Mono<CompleteSudokuRequest>
+        request: Mono<SudokuProto.Sudoku>
     ): Mono<Empty> = request
-        .map { req ->
+        .map { sudoku ->
             sudokuService.completeSudoku(
-                sudoku = SudokuCodec.decode(req.sudoku)
+                sudoku = SudokuCodec.decode(sudoku)
             )
         }
         .map { Empty.getDefaultInstance() }
